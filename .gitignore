@@ -1,0 +1,35 @@
+# Downloaded packages
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# Logs (don't commit real logs)
+*.log
+*.json
+
+# Secrets / keys
+*.key
+*.pem
+*.crt
+*.p12
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Personal reports (optional — remove if you want to commit reports)
+# reports/
