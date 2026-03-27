@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOC Lab — Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: rgba(255,255,255,0.07);
+    --green: #00e676;
+    --green-dim: #00c45a;
+    --cyan: #00d4ff;
+    --amber: #ffb300;
+    --red: #ff5252;
+    --blue: #4da6ff;
+    --purple: #bb86fc;
+    --text: #e8eaf0;
+    --muted: #8892a4;
+    --mono: 'JetBrains Mono', monospace;
+    --head: 'Syne', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.7;
+    padding: 48px 24px 80px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ─────────────────────────────── */
+  .hero {
+    text-align: center;
+    padding: 60px 0 48px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(0,230,118,0.12);
+    color: var(--green);
+    border: 1px solid rgba(0,230,118,0.3);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+  h1 {
+    font-family: var(--head);
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    margin-bottom: 16px;
+  }
+  h1 span { color: var(--green); }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 32px;
+  }
+  .author-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 6px 16px 6px 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--blue));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    font-family: var(--head);
+  }
+
+  /* ── Architecture block ──────────────────── */
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+  .arch-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .arch-card:hover { border-color: rgba(255,255,255,0.18); }
+  .arch-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    border-radius: 8px 0 0 8px;
+  }
+  .arch-card.green::before  { background: var(--green); }
+  .arch-card.cyan::before   { background: var(--cyan); }
+  .arch-card.amber::before  { background: var(--amber); }
+  .arch-card.blue::before   { background: var(--blue); }
+  .arch-card.purple::before { background: var(--purple); }
+  .arch-card.red::before    { background: var(--red); }
+  .arch-name {
+    font-family: var(--head);
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .arch-role { color: var(--muted); font-size: 11px; margin-bottom: 10px; }
+  .arch-ram {
+    font-size: 11px;
+    color: var(--green);
+    background: rgba(0,230,118,0.1);
+    border: 1px solid rgba(0,230,118,0.2);
+    border-radius: 3px;
+    padding: 2px 8px;
+    display: inline-block;
+  }
+
+  /* ── Phase sections ──────────────────────── */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .phase {
+    margin-bottom: 56px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .phase-num {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--head);
+    font-weight: 800;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .phase-title {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .phase-title span { font-weight: 400; font-size: 13px; color: var(--muted); margin-left: 8px; font-family: var(--mono); }
+
+  /* ── Terminal blocks ─────────────────────── */
+  .terminal {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .term-bar {
+    background: #111318;
+    border-bottom: 1px solid var(--border);
+    padding: 9px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.r { background: #ff5f57; }
+  .dot.y { background: #ffbd2e; }
+  .dot.g { background: #28c840; }
+  .term-label {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  .term-body { padding: 18px 20px; }
+  .cmd { color: var(--green); }
+  .cmd::before { content: '$ '; color: var(--muted); }
+  .out { color: var(--muted); font-size: 12px; }
+  .out.ok { color: #00c45a; }
+  .out.err { color: var(--red); }
+  .out.warn { color: var(--amber); }
+  .out.info { color: var(--cyan); }
+  pre { white-space: pre-wrap; word-break: break-all; }
+
+  /* ── Screenshot placeholder ──────────────── */
+  .screenshot-box {
+    background: var(--surface2);
+    border: 1px dashed rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .screenshot-box .icon {
+    font-size: 28px;
+    margin-bottom: 10px;
+    opacity: 0.4;
+  }
+  .screenshot-box p { color: var(--muted); font-size: 12px; }
+  .screenshot-box strong { color: var(--text); }
+
+  /* ── Alert/info boxes ────────────────────── */
+  .alert {
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    border-left: 3px solid;
+  }
+  .alert.info  { background: rgba(77,166,255,0.08); border-color: var(--blue); color: var(--blue); }
+  .alert.warn  { background: rgba(255,179,0,0.08);  border-color: var(--amber); color: var(--amber); }
+  .alert.check { background: rgba(0,230,118,0.08); border-color: var(--green); color: var(--green); }
+
+  /* ── Status table ────────────────────────── */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .dot-g { color: var(--green); }
+  .dot-a { color: var(--amber); }
+
+  /* ── GitHub section ──────────────────────── */
+  .github-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin-top: 64px;
+  }
+  .github-box h2 {
+    font-family: var(--head);
+    font-weight: 700;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .github-box p { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+
+  .step-list { list-style: none; counter-reset: steps; }
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+  .step-list li::before {
+    content: counter(steps);
+    min-width: 28px; height: 28px;
+    border-radius: 50%;
+    background: rgba(0,230,118,0.12);
+    border: 1px solid rgba(0,230,118,0.25);
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-list li .step-content strong {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+  .step-list li .step-content p { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+
+  code {
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+  }
+
+  /* ── Footer ──────────────────────────────── */
+  .footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .footer a { color: var(--green); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- ── HERO ────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="badge">Security Operations Center</div>
+  <h1>Home <span>SOC Lab</span><br>Setup Guide</h1>
+  <p class="hero-sub">RAM-optimised · Ubuntu Linux · ~1.4 GB Total</p>
+  <div class="author-chip">
+    <div class="avatar">PA</div>
+    <span>Perikala Anusha</span>
+  </div>
+</div>
+
+<!-- ── ARCHITECTURE ─────────────────────────────────────────── -->
+<div class="section-label">Lab Architecture</div>
+<div class="arch-grid">
+  <div class="arch-card green">
+    <div class="arch-name">Suricata</div>
+    <div class="arch-role">Network IDS/IPS</div>
+    <span class="arch-ram">~200 MB</span>
+  </div>
+  <div class="arch-card cyan">
+    <div class="arch-name">Zeek</div>
+    <div class="arch-role">Network Analysis</div>
+    <span class="arch-ram">~150 MB</span>
+  </div>
+  <div class="arch-card amber">
+    <div class="arch-name">Wazuh Agent</div>
+    <div class="arch-role">Log Collection / SIEM</div>
+    <span class="arch-ram">~100 MB</span>
+  </div>
+  <div class="arch-card blue">
+    <div class="arch-name">Elasticsearch</div>
+    <div class="arch-role">Log Storage / Database</div>
+    <span class="arch-ram">~512 MB</span>
+  </div>
+  <div class="arch-card purple">
+    <div class="arch-name">Kibana</div>
+    <div class="arch-role">Dashboard / Visualise</div>
+    <span class="arch-ram">~300 MB</span>
+  </div>
+  <div class="arch-card red">
+    <div class="arch-name">Wireshark</div>
+    <div class="arch-role">Packet Analysis</div>
+    <span class="arch-ram">~100 MB</span>
+  </div>
+</div>
+
+<!-- ── PHASES ───────────────────────────────────────────────── -->
+<div class="section-label">Installation Phases</div>
+
+<!-- Phase 1 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num" style="background:rgba(0,230,118,0.12);color:var(--green);">1</div>
+    <div class="phase-title">Prepare Environment <span>System update &amp; base tools</span></div>
+  </div>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">01_prepare_environment.sh</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd">sudo apt update && sudo apt upgrade -y</span>
+<span class="out ok">[✓] System updated</span>
+
+<span class="cmd">sudo apt install -y curl wget git net-tools nmap python3 python3-pip jq</span>
+<span class="out ok">[✓] Base tools installed</span>
+
+<span class="cmd">ip link show</span>
+<span class="out info">2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 ...</span>
+<span class="out ok">[✓] Network interface detected: eth0</span></pre>
+    </div>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Phase 1 Output</strong>
+    <p>Run the script and paste your terminal output here<br>File: <code>screenshots/phase1_system_update.png</code></p>
+  </div>
+</div>
+
+<!-- Phase 2 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num" style="background:rgba(0,212,255,0.12);color:var(--cyan);">2</div>
+    <div class="phase-title">Install Suricata <span>Network IDS/IPS</span></div>
+  </div>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">02_install_suricata.sh</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd">sudo apt install -y suricata</span>
+<span class="out ok">[✓] Suricata installed: Suricata 7.0.3</span>
+
+<span class="cmd">sudo suricata-update</span>
+<span class="out ok">[✓] Rules updated — 46,000+ threat signatures loaded</span>
+
+<span class="cmd">sudo suricata -c /etc/suricata/suricata.yaml -i eth0 -D</span>
+<span class="out ok">[✓] Suricata is running!</span>
+
+<span class="cmd">sudo tail -f /var/log/suricata/fast.log</span>
+<span class="out info">-- Watching for alerts... (run nmap in another terminal)</span></pre>
+    </div>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Suricata Running</strong>
+    <p>File: <code>screenshots/phase2_suricata_running.png</code></p>
+  </div>
+</div>
+
+<!-- Phase 3 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num" style="background:rgba(255,179,0,0.12);color:var(--amber);">3</div>
+    <div class="phase-title">Install Wazuh Agent <span>SIEM / Log Collector</span></div>
+  </div>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">03_install_wazuh.sh</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd">sudo apt install -y wazuh-agent</span>
+<span class="out ok">[✓] Wazuh agent installed</span>
+
+<span class="cmd">sudo systemctl start wazuh-agent</span>
+<span class="cmd">sudo systemctl status wazuh-agent</span>
+<span class="out ok">● wazuh-agent.service — Wazuh agent</span>
+<span class="out ok">   Active: active (running) since ...</span></pre>
+    </div>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Wazuh Agent Active</strong>
+    <p>File: <code>screenshots/phase3_wazuh_status.png</code></p>
+  </div>
+</div>
+
+<!-- Phase 4 -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num" style="background:rgba(77,166,255,0.12);color:var(--blue);">4</div>
+    <div class="phase-title">Install ELK Stack <span>Elasticsearch + Kibana</span></div>
+  </div>
+
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">04_install_elk.sh</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd">curl http://localhost:9200</span>
+<span class="out ok">{
+  "name" : "soc-lab",
+  "cluster_name" : "elasticsearch",
+  "version" : { "number" : "8.11.0" },
+  "tagline" : "You Know, for Search"
+}</span>
+
+<span class="cmd">sudo systemctl status kibana</span>
+<span class="out ok">● kibana.service — Kibana</span>
+<span class="out ok">   Active: active (running)</span>
+<span class="out info">→ Open: http://localhost:5601</span></pre>
+    </div>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Kibana Dashboard</strong>
+    <p>Browser screenshot at <code>http://localhost:5601</code><br>File: <code>screenshots/phase4_kibana_dashboard.png</code></p>
+  </div>
+</div>
+
+<!-- Phase 6 — Attacks -->
+<div class="phase">
+  <div class="phase-header">
+    <div class="phase-num" style="background:rgba(255,82,82,0.12);color:var(--red);">6</div>
+    <div class="phase-title">Simulate Attacks <span>Detect real threats</span></div>
+  </div>
+
+  <div class="alert warn">⚠️ Run ONLY on your own lab machine — never on production systems!</div>
+
+  <!-- Terminal 1 -->
+  <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">Terminal 1 — Watch alerts live:</p>
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">alert watcher</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd">sudo tail -f /var/log/suricata/fast.log</span>
+<span class="out warn">03/27/2026-05:58:01 [**] ET SCAN Nmap Scripting Engine User-Agent Detected [**]
+[Classification: Web Application Attack] [Priority: 1]
+{TCP} 127.0.0.1:44321 -> 127.0.0.1:80</span></pre>
+    </div>
+  </div>
+
+  <!-- Terminal 2 -->
+  <p style="color:var(--muted);font-size:12px;margin-bottom:8px;">Terminal 2 — Run attacks:</p>
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+      <span class="term-label">attack simulation</span>
+    </div>
+    <div class="term-body">
+<pre><span class="cmd"># Scenario 1: Port Scan</span>
+<span class="cmd">sudo nmap -sS 127.0.0.1</span>
+<span class="out ok">Starting Nmap 7.80</span>
+<span class="out">Nmap scan report for localhost (127.0.0.1)</span>
+<span class="out">All 1000 scanned ports are closed</span>
+<span class="out ok">Nmap done in 0.11 seconds</span>
+
+<span class="cmd"># Scenario 2: Ping Flood</span>
+<span class="cmd">ping -c 50 -i 0.1 127.0.0.1</span>
+
+<span class="cmd"># Scenario 3: SSH Brute Force Simulation</span>
+<span class="cmd">for i in {1..5}; do ssh -o BatchMode=yes fakeuser@localhost; done</span>
+<span class="out err">Attempt 1: Permission denied (publickey,password)</span>
+<span class="out err">Attempt 2: Permission denied (publickey,password)</span>
+<span class="out err">Attempt 3: Permission denied (publickey,password)</span></pre>
+    </div>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Attack Detected!</strong>
+    <p>Side-by-side terminals — nmap running + alert appearing in fast.log<br>File: <code>screenshots/phase6_port_scan_detected.png</code></p>
+  </div>
+
+  <div class="screenshot-box">
+    <div class="icon">📸</div>
+    <strong>Screenshot: Kibana Alerts View</strong>
+    <p>Kibana → Discover → filter <code>tags:suricata</code> showing real-time events<br>File: <code>screenshots/phase6_kibana_alerts.png</code></p>
+  </div>
+</div>
+
+<!-- ── SERVICE STATUS TABLE ──────────────────────────────────── -->
+<div class="section-label">Final Service Status</div>
+<table>
+  <thead>
+    <tr>
+      <th>Component</th>
+      <th>Role</th>
+      <th>Port</th>
+      <th>Status Check</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="dot-g">●</span> Suricata</td>
+      <td>Network IDS/IPS</td>
+      <td>—</td>
+      <td><code>ps aux | grep suricata</code></td>
+    </tr>
+    <tr>
+      <td><span class="dot-g">●</span> Wazuh Agent</td>
+      <td>SIEM / Log Collector</td>
+      <td>1514</td>
+      <td><code>systemctl status wazuh-agent</code></td>
+    </tr>
+    <tr>
+      <td><span class="dot-g">●</span> Elasticsearch</td>
+      <td>Log Storage</td>
+      <td>9200</td>
+      <td><code>curl localhost:9200</code></td>
+    </tr>
+    <tr>
+      <td><span class="dot-g">●</span> Kibana</td>
+      <td>Dashboard</td>
+      <td>5601</td>
+      <td><code>systemctl status kibana</code></td>
+    </tr>
+    <tr>
+      <td><span class="dot-g">●</span> Filebeat</td>
+      <td>Log Shipper</td>
+      <td>—</td>
+      <td><code>systemctl status filebeat</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ── GITHUB SECTION ────────────────────────────────────────── -->
+<div class="github-box">
+  <h2>Push to GitHub</h2>
+  <p>Step-by-step — create your repo and push all files</p>
+
+  <ol class="step-list">
+    <li>
+      <div class="step-content">
+        <strong>Create repo on GitHub.com</strong>
+        <p>Go to github.com → New Repository → Name it <code>soc-lab</code> → Public → No README (we have one)</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <strong>Clone or init locally</strong>
+        <div class="terminal" style="margin-top:8px">
+          <div class="term-body">
+<pre><span class="cmd">git clone https://github.com/YOUR_USERNAME/soc-lab.git
+cd soc-lab</span></pre>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <strong>Copy all project files in</strong>
+        <p>Copy the downloaded <code>soc-lab/</code> folder contents into your cloned repo folder</p>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <strong>Make scripts executable</strong>
+        <div class="terminal" style="margin-top:8px">
+          <div class="term-body">
+<pre><span class="cmd">chmod +x scripts/*.sh</span></pre>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <strong>Commit and push</strong>
+        <div class="terminal" style="margin-top:8px">
+          <div class="term-body">
+<pre><span class="cmd">git add .</span>
+<span class="cmd">git commit -m "Initial commit — Home SOC Lab setup"</span>
+<span class="cmd">git push origin main</span>
+<span class="out ok">[✓] Pushed to GitHub!</span></pre>
+          </div>
+        </div>
+      </div>
+    </li>
+    <li>
+      <div class="step-content">
+        <strong>Add real screenshots as you complete each phase</strong>
+        <div class="terminal" style="margin-top:8px">
+          <div class="term-body">
+<pre><span class="cmd">scrot screenshots/phase2_suricata_running.png</span>
+<span class="cmd">git add screenshots/</span>
+<span class="cmd">git commit -m "Add Phase 2 screenshots"</span>
+<span class="cmd">git push</span></pre>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ol>
+
+  <div class="alert check">✓ Your repo will be live at: github.com/YOUR_USERNAME/soc-lab</div>
+</div>
+
+<div class="footer">
+  Built by <strong>Perikala Anusha</strong> · SOC Analyst in Training
+  <br><br>
+  <a href="#">⭐ Star this repo if it helped you!</a>
+</div>
+
+</body>
+</html>
