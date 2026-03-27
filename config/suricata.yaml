@@ -1,0 +1,96 @@
+# ─────────────────────────────────────────────────────────
+# Suricata Configuration Template — SOC Lab
+# Author: Perikala Anusha
+#
+# Usage: Copy to /etc/suricata/suricata.yaml
+# Change: HOME_NET and interface to match your system
+# ─────────────────────────────────────────────────────────
+
+vars:
+  address-groups:
+    # ⚠️ Change this to your actual home/lab network range
+    HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+    EXTERNAL_NET: "!$HOME_NET"
+
+    HTTP_SERVERS: "$HOME_NET"
+    SMTP_SERVERS: "$HOME_NET"
+    SQL_SERVERS: "$HOME_NET"
+    DNS_SERVERS: "$HOME_NET"
+    TELNET_SERVERS: "$HOME_NET"
+
+  port-groups:
+    HTTP_PORTS: "80"
+    SHELLCODE_PORTS: "!80"
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+    FTP_PORTS: 21
+
+# ── Outputs ───────────────────────────────────────────────
+outputs:
+  - fast:
+      enabled: yes
+      filename: fast.log
+      append: yes
+
+  - eve-log:
+      enabled: yes
+      filename: eve.json
+      types:
+        - alert:
+            payload: yes
+            payload-buffer-size: 4kb
+            payload-printable: yes
+            packet: yes
+            metadata: no
+            http-body: yes
+            http-body-printable: yes
+            tagged-packets: yes
+        - http:
+            extended: yes
+        - dns:
+            query: yes
+            answer: yes
+        - tls:
+            extended: yes
+        - files:
+            force-magic: no
+        - smtp: {}
+        - ssh: {}
+        - stats:
+            totals: yes
+            threads: no
+            deltas: no
+        - flow: {}
+
+# ── Network capture ───────────────────────────────────────
+af-packet:
+  # ⚠️ Change 'eth0' to your actual interface (run: ip link show)
+  - interface: eth0
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+    tpacket-v3: yes
+
+# ── Rules ─────────────────────────────────────────────────
+default-rule-path: /var/lib/suricata/rules
+rule-files:
+  - suricata.rules
+
+# ── Logging ───────────────────────────────────────────────
+logging:
+  default-log-level: notice
+  outputs:
+    - console:
+        enabled: no
+    - file:
+        enabled: yes
+        level: info
+        filename: /var/log/suricata/suricata.log
+    - syslog:
+        enabled: no
+        facility: local5
+        format: "[%i] <%d> -- "
